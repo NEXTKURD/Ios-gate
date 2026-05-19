@@ -1,15 +1,16 @@
 #import <UIKit/UIKit.h>
 #include "KeyAuth.h"
 
-// 1. فانکشنی بۆ دیتنا پەنجەرا ئەپێ یا نوو (بێ کێشە)
+// 1. چارەسەرا Deprecated دگەل شێوازێ نوو
 UIViewController *getTopViewController() {
-    return [UIApplication sharedApplication].windows.firstObject.rootViewController;
+    UIWindowScene *scene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
+    return scene.windows.firstObject.rootViewController;
 }
 
 // 2. فانکشنی بۆ نیشاندانا سندوقا لۆگینێ
 void showKeyInput() {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"KeyAuth Login"
-        message:@"تکایە کلیلێ ل ڤێرێ بنڤێسە:"
+        message:@"تکایە کلیلێ بنڤێسە:"
         preferredStyle:UIAlertControllerStyleAlert];
 
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -19,13 +20,17 @@ void showKeyInput() {
     [alert addAction:[UIAlertAction actionWithTitle:@"لۆگین" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         NSString *userKey = alert.textFields[0].text;
         
-        // رەوانەکرنا کلیلێ بۆ سێرڤەری
-        KeyAuth::login([userKey UTF8String]);
+        // **ل ڤێرێ گوهۆڕین هەیە**: بکارئینانا `KeyAuthApp` و بانگکرنا `login`
+        // ئەگەر `KeyAuth` ناڤێ کلاسا تە بیت، دڤێت ب `KeyAuthApp::` یان `KeyAuth::` بێژین
+        // ل دويڤ وێ خەتایێ، دبیت ناڤێ فانکشنێ یێ جودا بیت. 
+        // ڤی کۆدی تاقی بکە:
         
-        if (KeyAuth::response.success) {
-            NSLog(@"سەرکەفتن: لۆگین یا ب سەرکەفتن هات!");
+        KeyAuthApp::login([userKey UTF8String]);
+        
+        // تاقیکرنا سەرکەفتنێ
+        if (KeyAuthApp::success) {
+            NSLog(@"سەرکەفتن!");
         } else {
-            // ئەگەر کلیل نەیا دروست بوو، جارەکا دی دەرێخە
             showKeyInput();
         }
     }]];
@@ -33,12 +38,10 @@ void showKeyInput() {
     [getTopViewController() presentViewController:alert animated:YES completion:nil];
 }
 
-// 3. کۆدێ سەرەکی (Constructor)
 __attribute__((constructor)) static void init_gate() {
-    // ل ڤێرێ زانیاریێن ئەکاونتێ خۆ دابنێ (OwnerID و Secret)
-    KeyAuth::initApp("NAVA_APP", "OWNER_ID", "SECRET");
+    // ئەگەر لایبراریا تە ب ناڤێ KeyAuthApp بیت
+    KeyAuthApp::init("NAVA_APP", "OWNER_ID", "SECRET");
     
-    // چاوەڕێ بکە تا ئەپ یێ حازر بیت پاشێ نیشان بدە
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         showKeyInput();
     });
