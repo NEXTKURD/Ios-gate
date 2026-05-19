@@ -1,0 +1,19 @@
+name: Build iOS Dylib
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Compile Dylib
+        run: |
+          xcrun --sdk iphoneos clang -dynamiclib -arch arm64 main.m -o PasswordGate.dylib -framework UIKit -framework Foundation
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: PasswordGate
+          path: PasswordGate.dylib
