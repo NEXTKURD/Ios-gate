@@ -1,12 +1,7 @@
-#import <UIKit/UIKit.h>
-#import "KeyAuth.h"
+#include "KeyAuth.h"
+#include <iostream>
 
+// ئەڤە ڕێکا دروستە بۆ بانگکرنا C++ ژ Objective-C
 __attribute__((constructor)) static void init_gate() {
-    // گرێدانا پڕۆژەیێ تە ب سێرڤەرێ KeyAuth
-    [KeyAuth initApp:@"Hogrbarwary05's Application" 
-              ownerID:@"ctPb2f2sjA" 
-              secret:@"ba700459d6d81c91c44465c45f2f85939f1a4a4297d198aa112372a0010a4c2f"];
-    
-    // ل ڤێرێ دێ پسیار ژ بکارئینەری کەی یان هەر کارەکێ تە ڤێت ئەنجام دەی
-    // ئەڤ کۆدە دێ بکارئینەری دگەل سێرڤەرێ KeyAuth گرێ دەت
+    KeyAuth::initApp("Hogrbarwary05's Application", "ctPb2f2sjA", "ba700459d6d81c91c44465c45f2f85939f1a4a4297d198aa112372a0010a4c2f");
 }
