@@ -1,13 +1,12 @@
 #import <UIKit/UIKit.h>
 #include "KeyAuth.h"
 
-// 1. چارەسەرا Deprecated دگەل شێوازێ نوو
+// نیشاندانا لۆگینێ (هیچ گوهۆڕین د ڤێ بەشێ دا نینە)
 UIViewController *getTopViewController() {
     UIWindowScene *scene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
     return scene.windows.firstObject.rootViewController;
 }
 
-// 2. فانکشنی بۆ نیشاندانا سندوقا لۆگینێ
 void showKeyInput() {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"KeyAuth Login"
         message:@"تکایە کلیلێ بنڤێسە:"
@@ -20,15 +19,11 @@ void showKeyInput() {
     [alert addAction:[UIAlertAction actionWithTitle:@"لۆگین" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         NSString *userKey = alert.textFields[0].text;
         
-        // **ل ڤێرێ گوهۆڕین هەیە**: بکارئینانا `KeyAuthApp` و بانگکرنا `login`
-        // ئەگەر `KeyAuth` ناڤێ کلاسا تە بیت، دڤێت ب `KeyAuthApp::` یان `KeyAuth::` بێژین
-        // ل دويڤ وێ خەتایێ، دبیت ناڤێ فانکشنێ یێ جودا بیت. 
-        // ڤی کۆدی تاقی بکە:
+        // **ل ڤێرێ راستڤەکرن**: بکارئینانا `KeyAuth::` و `login`
+        KeyAuth::login([userKey UTF8String]);
         
-        KeyAuthApp::login([userKey UTF8String]);
-        
-        // تاقیکرنا سەرکەفتنێ
-        if (KeyAuthApp::success) {
+        // **ل ڤێرێ راستڤەکرن**: بکارئینانا `KeyAuth::response.success`
+        if (KeyAuth::response.success) {
             NSLog(@"سەرکەفتن!");
         } else {
             showKeyInput();
@@ -38,9 +33,9 @@ void showKeyInput() {
     [getTopViewController() presentViewController:alert animated:YES completion:nil];
 }
 
+// **ل ڤێرێ راستڤەکرن**: بکارئینانا `KeyAuth::initApp`
 __attribute__((constructor)) static void init_gate() {
-    // ئەگەر لایبراریا تە ب ناڤێ KeyAuthApp بیت
-    KeyAuthApp::init("NAVA_APP", "OWNER_ID", "SECRET");
+    KeyAuth::initApp("NAVA_APP", "OWNER_ID", "SECRET");
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         showKeyInput();
