@@ -3,6 +3,8 @@
 __attribute__((constructor)) static void init_gate() {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         UIWindow *window = nil;
+        
+        // دیتنا پەنجەرا سەرەکی (Window) ب شێوازێ ستاندار
         if (@available(iOS 13.0, *)) {
             for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
                 if (scene.activationState == UISceneActivationStateForegroundActive) {
@@ -11,13 +13,15 @@ __attribute__((constructor)) static void init_gate() {
                 }
             }
         }
+        
         if (!window) {
-            window = [[UIApplication sharedApplication] keyWindow];
+            window = [UIApplication sharedApplication].windows.firstObject;
         }
         
         UIViewController *root = window.rootViewController;
         if (!root) return;
         
+        // دروستکرنا سندوقا پاسۆردێ
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Security System"
                                                                        message:@"Please enter the access password:"
                                                                 preferredStyle:UIAlertControllerStyleAlert];
@@ -29,9 +33,12 @@ __attribute__((constructor)) static void init_gate() {
         
         UIAlertAction *action = [UIAlertAction actionWithTitle:@"Login" style:UIAlertActionStyleDefault handler:^(UIAlertAction *act) {
             UITextField *field = alert.textFields.firstObject;
+            // تاقیکرنا پاسۆردێ
             if ([field.text isEqualToString:@"telegram-next_8ball"]) {
-                // Password is correct
+                // پاسۆرد یا دروستە، ئەپ دێ کار کەت
+                NSLog(@"Access Granted");
             } else {
+                // پاسۆرد یا خەلەتە، ئەپ دێ ژێ دەرکەڤیت
                 exit(0);
             }
         }];
