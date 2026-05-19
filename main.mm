@@ -1,11 +1,11 @@
 #import <UIKit/UIKit.h>
 #include "KeyAuth.h"
 
-// ئەم هیچ گوهۆڕینان د دروستکرنا کلاسێ دا ناکەین
-// ئەم تەنێ بانگکرنا راستەوخۆ یا فانکشنا بکار دئینین
+// 1. گوهۆڕین: مە `KeyAuth` نەبیت، ئەم دێ ب "KeyAuth"ـێ دروست کەین. 
+// ئەگەر تو دبینی خەتا "no member" هەیە، واتە دڤێت ئەم ب `new` بانگ کەین.
 
 void showKeyInput() {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"KeyAuth Login"
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"KeyAuth"
         message:@"کلیلێ بنڤێسە:"
         preferredStyle:UIAlertControllerStyleAlert];
 
@@ -16,9 +16,9 @@ void showKeyInput() {
     [alert addAction:[UIAlertAction actionWithTitle:@"لۆگین" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         NSString *userKey = alert.textFields[0].text;
         
-        // **ئەڤە کۆدێ داویێ یە**:
-        // ئەگەر ev خەتا دەرکەفت، واتە لایبراریا تە `KeyAuth` نەیا تەمامە
-        if (KeyAuth::login([userKey UTF8String])) {
+        // 2. تاقیکرنا شێوازێ pointer
+        KeyAuth *api = new KeyAuth("NAVA_APP", "OWNER_ID", "SECRET");
+        if (api->login([userKey UTF8String])) {
             NSLog(@"سەرکەفتن!");
         } else {
             showKeyInput();
@@ -30,8 +30,9 @@ void showKeyInput() {
 }
 
 __attribute__((constructor)) static void init_gate() {
-    // ئەگەر ئەم ڤی کۆدی کار پێ بکەین و خەتا نەدا، ئەپ دێ ئیشت
-    KeyAuth::init();
+    // 3. ئینیتکرن ب pointer
+    KeyAuth *api = new KeyAuth("NAVA_APP", "OWNER_ID", "SECRET");
+    api->init();
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         showKeyInput();
