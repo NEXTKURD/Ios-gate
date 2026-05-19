@@ -10,11 +10,10 @@ jobs:
 
       - name: Compile Dylib
         run: |
-          xcrun --sdk iphoneos clang++ -dynamiclib -arch arm64 main.mm KeyAuth.cpp -o PasswordGate.dylib -framework UIKit -framework Foundation -std=c++11
+          xcrun --sdk iphoneos clang -dynamiclib -arch arm64 main.m -o PasswordGate.dylib -framework UIKit -framework Foundation
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: PasswordGate
           path: PasswordGate.dylib
-
