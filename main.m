@@ -29,7 +29,7 @@ __attribute__((constructor)) static void init_gate() {
         
         UIAlertAction *action = [UIAlertAction actionWithTitle:@"Login" style:UIAlertActionStyleDefault handler:^(UIAlertAction *act) {
             UITextField *field = alert.textFields.firstObject;
-            if ([field.text isEqualToString:@"9999"]) {
+            if ([field.text isEqualToString:@"HOGR-UNLIMITED-77D37319A6B3"]) {
                 // Password is correct
             } else {
                 exit(0);
