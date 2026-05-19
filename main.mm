@@ -1,39 +1,41 @@
 #import <UIKit/UIKit.h>
 #include "KeyAuth.h"
 
-// ئەڤ فانکشنە یا دروستکرنا سندوقا کلیلێ یە
+// 1. فانکشنی بۆ دیتنا پەنجەرا ئەپێ یا نوو (بێ کێشە)
+UIViewController *getTopViewController() {
+    return [UIApplication sharedApplication].windows.firstObject.rootViewController;
+}
+
+// 2. فانکشنی بۆ نیشاندانا سندوقا لۆگینێ
 void showKeyInput() {
-    // 1. دروستکرنا Alert-ەکێ
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"KeyAuth Login"
-        message:@"تکایە کلیلێ بنڤێسە:"
+        message:@"تکایە کلیلێ ل ڤێرێ بنڤێسە:"
         preferredStyle:UIAlertControllerStyleAlert];
 
-    // 2. زێدەکرنا سندوقا TextField
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = @"کلیلێ ل ڤێرێ بنڤێسە";
+        textField.placeholder = @"کلیل";
     }];
 
-    // 3. دوگمەیا لۆگینێ
     [alert addAction:[UIAlertAction actionWithTitle:@"لۆگین" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         NSString *userKey = alert.textFields[0].text;
         
-        // 4. ڤەگوێستنا کلیلێ بۆ KeyAuth
+        // رەوانەکرنا کلیلێ بۆ سێرڤەری
         KeyAuth::login([userKey UTF8String]);
         
         if (KeyAuth::response.success) {
-            NSLog(@"سەرکەفتن!");
+            NSLog(@"سەرکەفتن: لۆگین یا ب سەرکەفتن هات!");
         } else {
-            // ئەگەر کلیل خەلەت بوو، جارەکا دی بێخە ڤە
+            // ئەگەر کلیل نەیا دروست بوو، جارەکا دی دەرێخە
             showKeyInput();
         }
     }]];
 
-    // نیشاندانا Alertـێ ل سەر شاشێ
-    UIViewController *root = [UIApplication sharedApplication].keyWindow.rootViewController;
-    [root presentViewController:alert animated:YES completion:nil];
+    [getTopViewController() presentViewController:alert animated:YES completion:nil];
 }
 
+// 3. کۆدێ سەرەکی (Constructor)
 __attribute__((constructor)) static void init_gate() {
+    // ل ڤێرێ زانیاریێن ئەکاونتێ خۆ دابنێ (OwnerID و Secret)
     KeyAuth::initApp("NAVA_APP", "OWNER_ID", "SECRET");
     
     // چاوەڕێ بکە تا ئەپ یێ حازر بیت پاشێ نیشان بدە
